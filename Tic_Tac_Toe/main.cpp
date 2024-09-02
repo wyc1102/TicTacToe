@@ -11,7 +11,7 @@ void drawInformation();
 void drawX(int i, int j);
 void drawO(int i, int j);
 void drawChess();
-void checkMouseLocation(ExMessage& msg);
+void checkMouseLocation(ExMessage& msg, bool& flag, int& i, int& j);
 void checkEvent();
 bool checkFlagWin(int flag);
 void checkWin();
@@ -191,14 +191,21 @@ void checkEvent()
 	{
 		if (playing == true && msg.message == WM_LBUTTONDOWN)
 		{
-			checkMouseLocation(msg);
-			if (player_now == 'O')
+			bool flag = true;
+			int i, j;
+			checkMouseLocation(msg, flag, i, j);
+			if (flag)
 			{
-				player_now = 'X';
-			}
-			else
-			{
-				player_now = 'O';
+				if (chess[i][j] == 0 && player_now == 'O')
+				{
+					chess[i][j] = 1;
+					player_now = 'X';
+				}
+				else if (chess[i][j] == 0 && player_now == 'X')
+				{
+					chess[i][j] = -1;
+					player_now = 'O';
+				}
 			}
 		}
 		if (playing == false && msg.message == WM_KEYDOWN)
@@ -207,10 +214,10 @@ void checkEvent()
 			{
 				restart();
 			}
-			if (msg.vkcode == VK_ESCAPE)//esc
-			{
-				exit(0);
-			}
+		}
+		if (msg.message == WM_KEYDOWN && msg.vkcode == VK_ESCAPE)//esc
+		{
+			exit(0);
 		}
 	}
 
@@ -227,10 +234,8 @@ void restart()
 		}
 	}
 }
-void checkMouseLocation(ExMessage& msg)
+void checkMouseLocation(ExMessage& msg, bool& flag, int& i, int& j)
 {
-	int i, j;
-	bool flag = true;
 	if (msg.x > 0 && msg.x < 200 && msg.y>0 && msg.y < 200)
 	{
 		i = 0; j = 0;
@@ -271,18 +276,6 @@ void checkMouseLocation(ExMessage& msg)
 	{
 		flag = false;
 	}
-	if (flag)
-	{
-		if (player_now == 'O')
-		{
-			chess[i][j] = 1;
-		}
-		else
-		{
-			chess[i][j] = -1;
-		}
-	}
-
 }
 void drawChess()
 {
